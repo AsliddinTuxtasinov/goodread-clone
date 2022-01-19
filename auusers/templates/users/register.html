@@ -7,7 +7,7 @@
 <body>
 
     <h1>Register page</h1>
-    <form method="post", action="{% url 'auusers:register' %}">{% csrf_token %}
+    <form method="post" action="{% url 'auusers:register' %}">{% csrf_token %}
         {{ form.as_p }}
         <button type="submit">create</button>
     </form>
