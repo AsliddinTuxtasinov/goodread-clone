@@ -1,5 +1,5 @@
-from django.shortcuts import HttpResponse
+from django.shortcuts import render
 
 
-def landingPage(request):
-    return HttpResponse(content="Django is working, yahooooo")
+def landing_page(request):
+    return render(request=request, template_name="landing_page.html")
