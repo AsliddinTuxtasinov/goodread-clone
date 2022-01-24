@@ -1,1 +1,4 @@
-"# goodread-clone" 
+# goodread-clone
+___
+
+> **Asliddin Tuxtasinov**
