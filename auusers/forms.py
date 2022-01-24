@@ -4,10 +4,11 @@ User = get_user_model()
 
 
 class UserCreateForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput())
 
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'password')
+        fields = ('username', 'first_name', 'last_name', 'email')
 
     def save(self, commit=True):
         user = super().save(commit)

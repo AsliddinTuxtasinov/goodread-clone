@@ -6,6 +6,10 @@
 </head>
 <body>
     <h1>Login page</h1>
+    <form method="post" action="{% url 'auusers:login' %}">{% csrf_token %}
+        {{ login_form.as_p }}
+        <button type="submit">Log in</button>
+    </form>
 
 </body>
 </html>
