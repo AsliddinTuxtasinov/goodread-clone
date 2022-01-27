@@ -103,3 +103,34 @@ class LoginTestCase(TestCase):
         self.client.post(path=reverse('auusers:login'), data=data2)
         user2 = get_user(self.client)
         self.assertFalse(user2.is_authenticated)
+
+
+class ProfileTestCase(TestCase):
+
+    def test_login_required(self):
+        response = self.client.get(path=reverse("auusers:profile"))
+
+        self.assertEqual(first=response.url, second=reverse("auusers:login")+"?next="+reverse("auusers:profile"))
+        self.assertEqual(first=response.status_code, second=302)
+
+    def test_profile_details(self):
+        data_context = {
+            'username': "asliddin",
+            'first_name': "Asliddin",
+            'last_name': "Tuxtasinov",
+            'email': "asliddin@gmail.com",
+            'password': "asliddin1!"
+        }
+
+        self.client.post(path=reverse('auusers:register'), data=data_context)
+        user = User.objects.get(username=data_context['username'])
+
+        self.assertNotEqual(first=user.password, second=data_context['password'])
+        self.assertTrue(user.check_password(data_context['password']))
+
+        self.client.login(username=data_context['username'], password=data_context['password'])
+
+        response = self.client.get(path=reverse("auusers:profile"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, user.username)

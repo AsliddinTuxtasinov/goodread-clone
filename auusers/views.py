@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model, login
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.views import View
 
@@ -38,3 +39,10 @@ class LoginView(View):
             login(request=request, user=user)
             return redirect(to="landing_page")
         return render(request=request, template_name=self.template_name, context={'login_form': login_form})
+
+
+class ProfileView(LoginRequiredMixin, View):
+
+    @staticmethod
+    def get(request):
+        return render(request, "users/profile_page.html", {"user": request.user})
