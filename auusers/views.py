@@ -1,4 +1,5 @@
-from django.contrib.auth import get_user_model, login
+from django.contrib import messages
+from django.contrib.auth import get_user_model, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
@@ -37,12 +38,20 @@ class LoginView(View):
         if login_form.is_valid():
             user = login_form.get_user()
             login(request=request, user=user)
-            return redirect(to="landing_page")
+            messages.success(request, "you have successfuly logged in.")
+            return redirect(to="books:books_list")
         return render(request=request, template_name=self.template_name, context={'login_form': login_form})
+
+
+class LogoutView(LoginRequiredMixin, View):
+
+    def get(self, request):
+        logout(request)
+        messages.info(request, "you have successfuly logged out.")
+        return redirect(to="landing_page")
 
 
 class ProfileView(LoginRequiredMixin, View):
 
-    @staticmethod
-    def get(request):
+    def get(self, request):
         return render(request, "users/profile_page.html", {"user": request.user})

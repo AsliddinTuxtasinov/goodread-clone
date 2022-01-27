@@ -8,10 +8,22 @@
 
     <h1>Landing page</h1>
 
+    {% if messages %}
+        {% for msg in messages %}
+            {{ msg }}
+        {% endfor %}
+    {% endif %}
+
     <p>
-        <a href="{% url 'auusers:register' %}">Register</a> | <a href="{% url 'auusers:login' %}">Login</a>
+        <a href="{% url 'books:books_list' %}">books list</a> |
+        <a href="{% url 'auusers:profile' %}">Profile page</a> |
+        <a href="{% url 'auusers:register' %}">Register</a> |
+
+        {% if request.user.is_authenticated %}
+            <a href="{% url 'auusers:logout' %}">Logout</a>
+        {% else %}
+            <a href="{% url 'auusers:login' %}">Login</a>
+        {% endif %}
     </p>
-    <p><a href="{% url 'books:books_list' %}">books list</a></p>
-    <p><a href="{% url 'auusers:profile' %}">Profile page</a></p>
 </body>
 </html>

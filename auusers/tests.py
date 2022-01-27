@@ -104,6 +104,16 @@ class LoginTestCase(TestCase):
         user2 = get_user(self.client)
         self.assertFalse(user2.is_authenticated)
 
+    def test_logout(self):
+        data = {'username': "asliddin", 'password': "asliddin1!"}
+        self.client.login(username=data['username'], password=data['password'])
+        user = get_user(self.client)
+        self.assertTrue(user.is_authenticated)
+
+        self.client.get(path=reverse("auusers:logout"))
+        user = get_user(self.client)
+        self.assertFalse(user.is_authenticated)
+
 
 class ProfileTestCase(TestCase):
 
