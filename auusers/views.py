@@ -39,7 +39,7 @@ class LoginView(View):
             user = login_form.get_user()
             login(request=request, user=user)
             messages.success(request, "you have successfuly logged in.")
-            return redirect(to="books:books_list")
+            return redirect(to="auusers:profile")
         return render(request=request, template_name=self.template_name, context={'login_form': login_form})
 
 
@@ -58,12 +58,13 @@ class ProfileView(LoginRequiredMixin, View):
 
 
 class ProfileUpdateView(LoginRequiredMixin, View):
+
     def get(self, request):
         user_update_form = UserUpdateForm(instance=request.user)
         return render(request, "users/profile_edit.html", {'form': user_update_form})
 
     def post(self, request):
-        user_update_form = UserUpdateForm(instance=request.user, data=request.POST)
+        user_update_form = UserUpdateForm(instance=request.user, data=request.POST, files=request.FILES)
         if user_update_form.is_valid():
             user_update_form.save()
             messages.success(request, "you have successfuly update profile")
