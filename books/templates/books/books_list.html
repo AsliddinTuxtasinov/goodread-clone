@@ -1,17 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Books list page</title>
-</head>
-<body>
-    <h1>Books list page</h1>
+{% extends "base.html" %}
 
-    {% if messages %}
-        {% for msg in messages %}
-            <span class="{{ msg.tags }}">{{ msg }}</span>
-        {% endfor %}
-    {% endif %}
+{% block title %}Books list page{% endblock %}
+
+{% block content %}
+
+    <h1>Books list page</h1>
 
     {% if books %}
         <ul>
@@ -22,5 +15,5 @@
     {% else %}
         <h3>Books not found.</h3>
     {% endif %}
-</body>
-</html>
+
+{% endblock %}

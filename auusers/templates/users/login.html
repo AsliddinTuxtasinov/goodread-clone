@@ -1,15 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Login page</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}Login page{% endblock%}
+
+{% block content %}
+
     <h1>Login page</h1>
     <form method="post" action="{% url 'auusers:login' %}">{% csrf_token %}
         {{ login_form.as_p }}
         <button type="submit">Log in</button>
+        <span class="ms-3">No account Then, <a href="{% url 'auusers:register' %}">get registered?</a></span>
     </form>
 
-</body>
-</html>
+{% endblock %}
