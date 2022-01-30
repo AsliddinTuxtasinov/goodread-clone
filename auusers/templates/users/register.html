@@ -1,13 +1,19 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 
 {% block title %}Register page{% endblock%}
 
 {% block content %}
 
-    <h1>Register page</h1>
-    <form method="post" action="{% url 'auusers:register' %}">{% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">create</button>
-    </form>
+    <h3>Register</h3>
+    <div class="row mb-2">
+        <div class="col-4">
+            <form method="post" action="{% url 'auusers:register' %}">{% csrf_token %}
+                {{ form | crispy }}
+                <button type="submit" class="btn btn-primary" >create account</button>
+                <span>If you have already register, <a href="{% url 'auusers:login' %}">click here</a></span>
+            </form>
+        </div>
+    </div>
 
 {% endblock %}
