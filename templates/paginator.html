@@ -1,0 +1,45 @@
+<ul class="pagination">
+
+    <li class="page-item">
+        {% if page_obj.has_previous %}
+            <a href="?page={{page_obj.previous_page_number}}" class="page-link">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        {% else %}
+          <a style="cursor:pointer;" class="page-link">
+              <span aria-hidden="true">&laquo;</span>
+          </a>
+        {% endif %}
+    </li>
+
+    {% if page_obj.number|add:'-4' > 1 %}
+        <li class="page-item">
+            <a href="?page={{ page_obj.number|add:'-5' }}" class="page-link">&hellip;</a>
+        </li>
+    {% endif %}
+
+    {% for i in page_obj.paginator.page_range %}
+        <li class="page-item">
+            {% if page_obj.number == i %}
+                <a class="active page-link" style="cursor:pointer;">{{i}}</a>
+            {% elif i > page_obj.number|add:'-5' and i < page_obj.number|add:'5' %}
+                <a href="?page={{ i }}" class="page-link">{{ i }}</a>
+            {% endif %}
+        </li>
+    {% endfor %}
+
+    {% if page_obj.paginator.num_pages > page_obj.number|add:'4' %}
+        <li class="page-item">
+            <a href="?page={{ page_obj.number|add:'5' }}" class="page-link">&hellip;</a>
+        </li>
+    {% endif %}
+
+    <li class="page-item">
+        {% if page_obj.has_next %}
+          <a href="?page={{page_obj.next_page_number}}" class="page-link">&raquo;</a>
+        {% else %}
+          <a style="cursor:pointer;" class="page-link">&raquo;</a>
+        {% endif %}
+    </li>
+
+</ul>

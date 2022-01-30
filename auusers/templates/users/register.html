@@ -10,8 +10,8 @@
         <div class="col-4">
             <form method="post" action="{% url 'auusers:register' %}">{% csrf_token %}
                 {{ form | crispy }}
+                <span>If you have already register, <a href="{% url 'auusers:login' %}">click here</a></span><br>
                 <button type="submit" class="btn btn-primary" >create account</button>
-                <span>If you have already register, <a href="{% url 'auusers:login' %}">click here</a></span>
             </form>
         </div>
     </div>

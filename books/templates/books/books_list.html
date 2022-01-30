@@ -4,22 +4,34 @@
 
 {% block content %}
 
-    <h1>Books list page</h1>
+    <h1>Books</h1>
 
-    {% if books %}
-        {% for book in books %}
+    <div class="mb-2 row">
+        <div class="col-8">
+            <form class="d-flex" method="get">
+                <input class="form-control me-2" type="search" placeholder="Search" value="{{ search_query }}" name="q">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+
+
+    {% if page_obj %}
+        {% for book in page_obj.object_list %}
             <div class="row mb-2">
                 <div class="col-2">
                     <img src="{{ book.coover_picture.url }}" alt="book coover picture" class="cover-picture">
                 </div>
                 <div class="col-6 ms-4">
                     <a href="{% url 'books:book_detail' book.id %}">{{ book.title }}</a>
-                    <p>{{ book.description }}</p>
+                    <p>{{ book.description | truncatewords:70 }}</p>
                 </div>
             </div>
         {% endfor %}
     {% else %}
         <h3>Books not found.</h3>
     {% endif %}
+
+    {% include 'paginator.html' %}
 
 {% endblock %}

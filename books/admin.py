@@ -24,4 +24,4 @@ class BookAuthordmin(admin.ModelAdmin):
 @admin.register(BookReview)
 class BookReviewAdmin(admin.ModelAdmin):
     search_fields = ("user", "book")
-    list_display = ("user", "book", "stars_given", "comment")
+    list_display = ("user", "book", "stars_given")

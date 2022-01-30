@@ -1,6 +1,8 @@
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.utils import timezone
+
 User = get_user_model()
 
 
@@ -39,6 +41,7 @@ class BookReview(models.Model):
     stars_given = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(5)]
     )
+    created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return f"{self.user} - {self.comment}"
+        return f"{self.user} - {self.comment[:100]+'...'}"

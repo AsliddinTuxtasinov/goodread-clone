@@ -4,7 +4,7 @@
 
 {% block content %}
 
-    <div class="row">
+    <div class="row mb-4">
         <div class="col-2">
             <img src="{{ book.coover_picture.url }}" alt="book coover picture" class="cover-picture">
         </div>
@@ -14,5 +14,18 @@
         </div>
 
     </div>
+
+    <h4>Reviews</h4><hr>
+    {% for reweiw in book.bookreview_set.all %}
+        <div class="row mb-5">
+            <div class="col-1 me-3">
+                <img src="{{ reweiw.user.profile_picture.url }}" alt="profile_picture" class="small-profile-pic">
+            </div>
+            <div class="col-8 col-xs-auto">
+                <strong>{{ reweiw.user.username }}</strong> rated it {{ reweiw.stars_given }} stars <span class="fw-lighter">{{ reweiw.created_at }}</span>
+                <p class="mt-2 font-monospace">{{ reweiw.comment }}</p>
+            </div>
+        </div>
+    {% endfor %}
 
 {% endblock %}
