@@ -1,7 +1,9 @@
 from django.test import TestCase
 from django.urls import reverse
+from django.contrib.auth import get_user_model
 
 from books.models import Book
+User = get_user_model()
 
 
 class BooksTestCase(TestCase):
@@ -49,3 +51,27 @@ class BooksTestCase(TestCase):
         self.assertContains(response, book3.title)
         self.assertNotContains(response, book1.title)
         self.assertNotContains(response, book2.title)
+
+
+class BookReviewTestCase(TestCase):
+
+    def test_add_review(self):
+        book = Book.objects.create(title="title1", description="description1", isbn="1111")
+        user = User.objects.create(username="asliddin", first_name="Asliddin",
+                                   last_name="Tuxtasinov", email="asliddin@gmail.com")
+        user.set_password("asliddin1!")
+        user.save()
+        self.client.login(username="asliddin", password="asliddin1!")
+
+        response = self.client.post(
+            path=reverse("books:add_review", kwargs={"id": book.id}),
+            data={"comment": "Nice book", "stars_given": 3}
+        )
+        book_reviews = book.bookreview_set.all()
+
+        self.assertEqual(book_reviews.count(), 1)
+        self.assertEqual(book_reviews[0].stars_given, 3)
+        self.assertEqual(book_reviews[0].comment, "Nice book")
+        self.assertEqual(book_reviews[0].book, book)
+        self.assertEqual(book_reviews[0].user, user)
+        self.assertEqual(response.url, reverse("books:book_detail", kwargs={"id": book.id}))

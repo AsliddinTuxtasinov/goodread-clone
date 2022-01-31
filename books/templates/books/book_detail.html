@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 
 {% block title %}Book detail page{% endblock%}
 
@@ -15,17 +16,29 @@
 
     </div>
 
-    <h4>Reviews</h4><hr>
-    {% for reweiw in book.bookreview_set.all %}
-        <div class="row mb-5">
-            <div class="col-1 me-3">
-                <img src="{{ reweiw.user.profile_picture.url }}" alt="profile_picture" class="small-profile-pic">
-            </div>
-            <div class="col-8 col-xs-auto">
-                <strong>{{ reweiw.user.username }}</strong> rated it {{ reweiw.stars_given }} stars <span class="fw-lighter">{{ reweiw.created_at }}</span>
-                <p class="mt-2 font-monospace">{{ reweiw.comment }}</p>
-            </div>
+    <div class="row mb-4">
+        <h4>Add Review</h4>
+        <div class="col-6">
+            <form method="post" action="{% url 'books:add_review' book.id %}">{% csrf_token %}
+                {{ review_form|crispy }}
+                <button type="submit" class="btn btn-success" >Add review</button>
+            </form>
         </div>
-    {% endfor %}
+    </div>
+
+    {% if book.bookreview_set.exists %}
+        <h4>Reviews</h4><hr>
+        {% for reweiw in book.bookreview_set.all %}
+            <div class="row mb-5">
+                <div class="col-1 me-3">
+                    <img src="{{ reweiw.user.profile_picture.url }}" alt="profile_picture" class="small-profile-pic">
+                </div>
+                <div class="col-8 col-xs-auto">
+                    <strong>{{ reweiw.user.username }}</strong> rated it {{ reweiw.stars_given }} stars <span class="fw-lighter">{{ reweiw.created_at }}</span>
+                    <p class="mt-2 font-monospace">{{ reweiw.comment }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
 
 {% endblock %}

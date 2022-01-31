@@ -1,10 +1,13 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.http import Http404
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 from django.views import View
 from django.views.generic import ListView, DetailView
 
-from books.models import Book
+from books.models import Book, BookReview
+from books.forms import BookReviewForm
 
 
 # class BooksView(ListView):
@@ -45,16 +48,34 @@ class BooksView(View):
                       })
 
 
-class BookDetailView(DetailView):
-    template_name = "books/book_detail.html"
-    pk_url_kwarg = "id"
-    model = Book
-    context_object_name = 'book'
-
-
-# class BookDetailView(View):
+# class BookDetailView(DetailView):
 #     template_name = "books/book_detail.html"
-#
-#     def get(self, request, id):
-#         book = Book.objects.get(id=id)
-#         return render(request, self.template_name, {"book": book})
+#     pk_url_kwarg = "id"
+#     model = Book
+#     context_object_name = 'book'
+
+
+class BookDetailView(View):
+
+    def get(self, request, id):
+        book = get_object_or_404(Book, id=id)
+        review_form = BookReviewForm()
+        context = {
+            "book": book,
+            "review_form": review_form
+        }
+        return render(request=request, template_name="books/book_detail.html", context=context)
+
+
+class AddReviewView(LoginRequiredMixin, View):
+    def post(self, request, id):
+
+        book = get_object_or_404(Book, id=id)
+        review_form = BookReviewForm(data=request.POST)
+
+        if review_form.is_valid():
+            BookReview.objects.create(user=request.user, book=book, **review_form.cleaned_data)
+            return redirect(reverse("books:book_detail", kwargs={"id": book.id}))
+
+        context = {"book": book, "review_form": review_form}
+        return render(request=request, template_name="books/book_detail.html", context=context)
