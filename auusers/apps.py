@@ -4,3 +4,6 @@ from django.apps import AppConfig
 class AuusersConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'auusers'
+
+    def ready(self):
+        import auusers.signals

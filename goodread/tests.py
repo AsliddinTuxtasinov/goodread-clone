@@ -20,6 +20,7 @@ class HomePageTestCase(TestCase):
         review3 = BookReview.objects.create(book=book, user=user, stars_given=5, comment="Awful bad book")
 
         response = self.client.get(reverse("home_page") + "?page_size=2")
-        self.assertContains(response, review2.comment)
+
         self.assertContains(response, review1.comment)
+        self.assertContains(response, review2.comment)
         self.assertNotContains(response, review3.comment)
