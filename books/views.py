@@ -56,7 +56,6 @@ class BooksView(View):
 
 
 class BookDetailView(View):
-
     def get(self, request, id):
         book = get_object_or_404(Book, id=id)
         review_form = BookReviewForm()
