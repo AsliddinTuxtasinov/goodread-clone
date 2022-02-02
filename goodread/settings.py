@@ -139,3 +139,6 @@ EMAIL_HOST_PASSWORD = "asliddin5@gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
+
+# Broker settings.
+# CELERY_BROKER_URL = "amqp://guest:guest@localhost:15672//"  # broker_url = 'amqp://guest:guest@localhost:5672//'
