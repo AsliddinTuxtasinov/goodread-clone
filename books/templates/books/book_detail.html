@@ -45,6 +45,10 @@
                 </div>
                 <div class="col-8 col-xs-auto">
                     <strong>{{ reweiw.user.username }}</strong> rated it {{ reweiw.stars_given }} stars <span class="fw-lighter">{{ reweiw.created_at }}</span>
+                    {% if reweiw.user == request.user %}
+                        <a href="{% url 'books:edit_review' book.id reweiw.id %}"><i class="bi bi-pencil"></i></a>
+                        <a href="{% url 'books:confirm_delete_review' book.id reweiw.id %}"><i class="bi bi-trash"></i></a>
+                    {% endif %}
                     <p class="mt-2 font-monospace">{{ reweiw.comment }}</p>
                 </div>
             </div>

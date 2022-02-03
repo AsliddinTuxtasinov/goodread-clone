@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 
-from books.models import Book, Author, BookAuthor
+from books.models import Book, Author, BookAuthor, BookReview
 User = get_user_model()
 
 
@@ -27,8 +27,10 @@ class BooksTestCase(TestCase):
 
     def test_book_detail_page(self):
         book = Book.objects.create(title="title1", description="description1", isbn="1111")
-        author1 = Author.objects.create(first_name="first_name1", last_name="last_name1", email="email1@gmail.com", bio="bio1")
-        author2 = Author.objects.create(first_name="first_name2", last_name="last_name2", email="email2@gmail.com", bio="bio2")
+        author1 = Author.objects.create(first_name="first_name1", last_name="last_name1",
+                                        email="email1@gmail.com", bio="bio1")
+        author2 = Author.objects.create(first_name="first_name2", last_name="last_name2",
+                                        email="email2@gmail.com", bio="bio2")
         book_author1 = BookAuthor.objects.create(book=book, author=author1)
         book_author2 = BookAuthor.objects.create(book=book, author=author2)
         response = self.client.get(path=reverse("books:book_detail", kwargs={"id": book.id}))
@@ -61,23 +63,60 @@ class BooksTestCase(TestCase):
 
 class BookReviewTestCase(TestCase):
 
-    def test_add_review(self):
-        book = Book.objects.create(title="title1", description="description1", isbn="1111")
-        user = User.objects.create(username="asliddin", first_name="Asliddin",
-                                   last_name="Tuxtasinov", email="asliddin@gmail.com")
-        user.set_password("asliddin1!")
-        user.save()
+    def setUp(self):
+        self.book = Book.objects.create(title="title1", description="description1", isbn="1111")
+        self.user = User.objects.create(username="asliddin", first_name="Asliddin",
+                                        last_name="Tuxtasinov", email="asliddin@gmail.com")
+        self.user.set_password("asliddin1!")
+        self.user.save()
+        BookReview.objects.create(user=self.user, book=self.book, comment="vala vala vala", stars_given=5)
         self.client.login(username="asliddin", password="asliddin1!")
+        self.response = self.client.get(reverse("books:book_detail", kwargs={"id": self.book.id}))
 
-        response = self.client.post(
-            path=reverse("books:add_review", kwargs={"id": book.id}),
+    def test_add_review(self):
+        self.response = self.client.post(
+            path=reverse("books:add_review", kwargs={"id": self.book.id}),
             data={"comment": "Nice book", "stars_given": 3}
         )
-        book_reviews = book.bookreview_set.all()
+        book_review = self.book.bookreview_set.last()
 
-        self.assertEqual(book_reviews.count(), 1)
-        self.assertEqual(book_reviews[0].stars_given, 3)
-        self.assertEqual(book_reviews[0].comment, "Nice book")
-        self.assertEqual(book_reviews[0].book, book)
-        self.assertEqual(book_reviews[0].user, user)
-        self.assertEqual(response.url, reverse("books:book_detail", kwargs={"id": book.id}))
+        self.assertEqual(self.book.bookreview_set.all().count(), 2)
+        self.assertEqual(book_review.stars_given, 3)
+        self.assertEqual(book_review.comment, "Nice book")
+        self.assertEqual(book_review.book, self.book)
+        self.assertEqual(book_review.user, self.user)
+        self.assertEqual(self.response.url, reverse("books:book_detail", kwargs={"id": self.book.id}))
+
+    def test_edit_review(self):
+        book_review = self.book.bookreview_set.all()[0]
+
+        self.assertEqual(BookReview.objects.count(), 1)
+        self.assertContains(self.response, book_review.stars_given)
+        self.assertContains(self.response, book_review.comment)
+
+        self.response = self.client.post(
+            path=reverse("books:edit_review", kwargs={"book_id": self.book.id, "review_id": book_review.id}),
+            data={"comment": "good book", "stars_given": 1}
+        )
+        book_review = BookReview.objects.all()[0]
+
+        self.assertEqual(self.response.url, reverse("books:book_detail", kwargs={"id": self.book.id}))
+        self.assertNotEqual(book_review.stars_given, 3)
+        self.assertNotEqual(book_review.comment, "Nice book")
+
+        self.assertEqual(BookReview.objects.count(), 1)
+        self.assertEqual(book_review.comment, "good book")
+
+    def test_delete_review(self):
+        book_review = self.book.bookreview_set.all()[0]
+
+        self.assertEqual(BookReview.objects.count(), 1)
+        self.assertContains(self.response, book_review.stars_given)
+        self.assertContains(self.response, book_review.comment)
+
+        self.response = self.client.get(
+            reverse("books:delete_review", kwargs={"book_id": self.book.id, "review_id": book_review.id})
+        )
+
+        self.assertEqual(self.response.url, reverse("books:book_detail", kwargs={"id": self.book.id}))
+        self.assertEqual(BookReview.objects.count(), 0)

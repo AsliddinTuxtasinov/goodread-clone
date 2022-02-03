@@ -10,7 +10,7 @@ class Book(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
     isbn = models.CharField(max_length=20)
-    coover_picture = models.ImageField(default="default-book-picture.jpg")
+    coover_picture = models.ImageField(default="default-book-picture.jpg", upload_to="picture/")
 
     def __str__(self):
         return self.title

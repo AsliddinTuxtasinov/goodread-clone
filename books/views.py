@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.http import Http404
@@ -78,3 +79,39 @@ class AddReviewView(LoginRequiredMixin, View):
 
         context = {"book": book, "review_form": review_form}
         return render(request=request, template_name="books/book_detail.html", context=context)
+
+
+class EditReviewView(LoginRequiredMixin, View):
+    def get(self, request, book_id, review_id):
+        book = get_object_or_404(Book, id=book_id)
+        review = book.bookreview_set.get(id=review_id)
+        review_form = BookReviewForm(instance=review)
+
+        return render(request, "books/review_edit.html", {"book": book, "review": review, "review_form": review_form})
+
+    def post(self, request, book_id, review_id):
+        book = get_object_or_404(Book, id=book_id)
+        review = book.bookreview_set.get(id=review_id)
+        review_form = BookReviewForm(instance=review, data=request.POST)
+
+        if review_form.is_valid():
+            review_form.save()
+            return redirect(reverse("books:book_detail", kwargs={"id": book.id}))
+
+        return render(request, "books/review_edit.html", {"book": book, "review": review, "review_form": review_form})
+
+
+class ConfirmDeleteReviewView(LoginRequiredMixin, View):
+    def get(self, request, book_id, review_id):
+        book = get_object_or_404(Book, id=book_id)
+        review = book.bookreview_set.get(id=review_id)
+        return render(request, "books/confirm_delete_review.html", {"book": book, "review": review})
+
+
+class DeleteReviewView(LoginRequiredMixin, View):
+    def get(self, request, book_id, review_id):
+        book = get_object_or_404(Book, id=book_id)
+        review = book.bookreview_set.get(id=review_id)
+        review.delete()
+        messages.success(request, "You have successfully deleted this review.")
+        return redirect(reverse("books:book_detail", kwargs={"id": book.id}))
