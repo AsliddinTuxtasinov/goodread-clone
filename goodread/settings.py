@@ -28,10 +28,12 @@ INSTALLED_APPS = [
 
     "crispy_forms",  # for forms styles
     "crispy_bootstrap5",  # for forms styles
+    "rest_framework",  # DRF
 
 
     'books',  # new app
-    "auusers"  # new app
+    "auusers",  # new app
+    "api",  # api app
 ]
 
 # for forms styles
@@ -142,3 +144,9 @@ EMAIL_USE_SSL = False
 
 # Broker settings.
 # CELERY_BROKER_URL = "amqp://guest:guest@localhost:15672//"  # broker_url = 'amqp://guest:guest@localhost:5672//'
+
+# REST FRAMEWORK sittings
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 2
+}
