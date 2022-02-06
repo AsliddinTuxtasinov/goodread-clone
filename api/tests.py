@@ -37,6 +37,54 @@ class BookReviewAPITestCase(APITestCase):
         self.assertEqual(response.data['user']['last_name'], "Tuxtasinov")
         self.assertEqual(response.data['user']['email'], "asliddin@gmail.com")
 
+    def test_delete_book_review_api(self):
+        book_review = BookReview.objects.create(user=self.user, book=self.book, comment="vala vala vala", stars_given=5)
+        response = self.client.delete(reverse('api:review_detail', kwargs={'id': book_review.id}))
+
+        self.assertEqual(response.status_code, 204)
+        self.assertFalse(BookReview.objects.filter(id=book_review.id).exists())
+
+    def test_patch_book_review_api(self):
+        book_review = BookReview.objects.create(user=self.user, book=self.book, comment="vala vala vala", stars_given=5)
+        response = self.client.patch(reverse('api:review_detail', kwargs={'id': book_review.id}),
+                                     data={"comment": "good books"})
+        book_review.refresh_from_db()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["comment"], "good books")
+        self.assertEqual(book_review.comment, "good books")
+
+    def test_put_book_review_api(self):
+        book_review = BookReview.objects.create(user=self.user, book=self.book, comment="vala vala vala", stars_given=5)
+        response = self.client.put(reverse('api:review_detail', kwargs={'id': book_review.id}), data={
+            "comment": "good books",
+            "stars_given": 5,
+            "book_id": self.book.id,
+            "user_id": self.user.id
+        })
+        book_review.refresh_from_db()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["comment"], "good books")
+        self.assertEqual(book_review.comment, "good books")
+        self.assertEqual(response.data["stars_given"], 5)
+        self.assertEqual(book_review.stars_given, 5)
+
+    def test_create_book_review_api(self):
+        data = {
+            "comment": "I recommend to read this book",
+            "stars_given": 5,
+            "book_id": self.book.id,
+            "user_id": self.user.id
+        }
+        response = self.client.post(path=reverse('api:reviews_list'), data=data)
+        book_review = BookReview.objects.get(book=self.book)
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(book_review.stars_given, data["stars_given"])
+        self.assertEqual(book_review.comment, data["comment"])
+
+
     def test_book_review_list_api(self):
         user2 = User.objects.create(username="cool", email="asliddin5@gmail.com")
         user2.set_password("cool1!")
