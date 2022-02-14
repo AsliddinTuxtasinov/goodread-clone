@@ -2,10 +2,13 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from django.views import View
 
-from auusers.forms import UserCreateForm, UserUpdateForm
+from auusers.forms import UserCreateForm, UserUpdateForm, BookAuthorCreateForm
+from books.models import Author
+
 User = get_user_model()
 
 
@@ -54,7 +57,24 @@ class LogoutView(LoginRequiredMixin, View):
 class ProfileView(LoginRequiredMixin, View):
 
     def get(self, request):
-        return render(request, "users/profile_page.html", {"user": request.user})
+        context = {"user": request.user, "is_author": True}
+        if request.user.are_you_author:
+            context.update({
+                "books": request.user.author.book_author.all()
+            })
+        return render(request, "users/profile_page.html", context)
+
+
+class AuthorProfileView(LoginRequiredMixin, View):
+
+    def get(self, request, id):
+        author = get_object_or_404(Author, id=id)
+        context = {
+            "user": author,
+            "books": author.book_author.all(),
+            "is_author": False
+        }
+        return render(request, "users/profile_page.html", context)
 
 
 class ProfileUpdateView(LoginRequiredMixin, View):
@@ -70,3 +90,18 @@ class ProfileUpdateView(LoginRequiredMixin, View):
             messages.success(request, "you have successfuly update profile")
             return redirect("auusers:profile")
         return render(request, "users/profile_edit.html", {'form': user_update_form})
+
+
+class BookAuthorCreateView(View):
+
+    def get(self, request):
+        create_form = BookAuthorCreateForm()
+        return render(request=request, template_name="users/book_create.html", context={'create_form': create_form})
+
+    def post(self, request):
+        create_form = BookAuthorCreateForm(data=request.POST)
+        if create_form.is_valid():
+            create_form.save(request, create_form.cleaned_data)
+            messages.success(request, "you have successfuly add book as author.")
+            return redirect(reverse("auusers:profile"))
+        return render(request=request, template_name="users/book_create.html", context={'create_form': create_form})

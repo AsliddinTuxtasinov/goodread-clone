@@ -5,7 +5,7 @@
     <link href="{% static 'css/profile_page.css' %}" rel="stylesheet" type="text/css">
 {% endblock %}
 
-{% block title %}Profile page{% endblock%}
+{% block title %}Profile page{% endblock %}
 
 {% block content %}
 
@@ -37,20 +37,115 @@
                                 </div>
                             </div>
                         </div>
-                        <h6 class="theme-color lead">A Lead UX &amp; UI designer based in Canada</h6>
-                        <p>I <mark>design and develop</mark> services for customers of all sizes, specializing in creating stylish, modern websites, web services and online stores. My passion is to design digital user experiences through the bold interface and meaningful interactions.</p>
+                        <div>
+                            <h6 class="mb-0" style="border-bottom: 1px solid black; color: black">
+                                {{ user.username | upper }}’S BIO:
+                            </h6>
+                            <p> services for customers of all sizes, specializing in creating stylish,
+                                modern websites, web services and online stores. My passion is to design
+                                digital user experiences through the bold interface and meaningful interactions.
+                            </p>
+                        </div>
+                        <div class="theme-color">
+                            <h6 class="mb-0" style="border-bottom: 1px dashed black; color: black">
+                                {{ user.username | upper }}’S QUOTE:
+                            </h6>
+                            <p>A Lead UX &amp; UI designer based in Canada</p>
+                        </div>
                     </div>
                 </div>
                 <div class="col-lg-6">
                     <div class="about-avatar">
-                        <img src="{{ user.profile_picture.url }}" title="profile picture" alt="profile picture" class="profile-picture">
+                        <img src="{{ user.profile_picture.url }}" title="profile picture" alt="profile picture"
+                             class="profile-picture">
                     </div>
-                    <div class=" d-flex mt-2">
-                        <a href="{% url 'auusers:profile-edit' %}" class="btn btn1 btn-dark">edit profile</a>
-                    </div>
+                    {% if is_author %}
+                        <div class=" d-flex mt-2">
+                            <a href="{% url 'auusers:profile-edit' %}" class="btn btn1 btn-dark me-2">edit profile</a>
+                            {% if user.are_you_author %}
+                                <a href="{% url 'auusers:create-author-book' %}" class="btn btn1 btn-dark">add book as
+                                    author</a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </section>
+    <hr>
+    {% if user.are_you_author and books %}
+        <h3>Your books</h3>
+        {% for book in books %}
+
+            <section class="section about-section gray-bg" id="about">
+                <div class="container">
+                    <div class="row align-items-center flex-row-reverse">
+                        <div class="col-lg-6">
+                            <div class="about-text go-to">
+                                <div>
+                                    <h6 class="mb-0 fw-bolder">
+                                        <a href="{{ book.book.get_absolute_url }}">{{ book.book.title }}</a>
+                                        {% if is_author %}
+                                            <span class="text-muted"><a href="#" class="text-reset">edit</a></span>|
+                                            <span class="text-muted"><a href="#" class="text-reset">delete</a></span>
+                                        {% endif %}
+                                    </h6>
+                                    <p class="m-0">
+                                        <span class="fw-normal">description:</span>
+                                        <span class="fw-lighter">{{ book.book.description }}</span>
+                                    </p>
+                                    <p class="mt-0 fw-normal">
+                                        books's isbn: <span class="font-monospace">{{ book.book.isbn }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="about-avatar">
+                                <img src="{{ user.profile_picture.url }}" title="book picture" alt="book picture"
+                                     class="profile-picture">
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            {% if book.book.bookreview_set.all %}
+                                <h5 class="ms-4">All reviews</h5>
+                                {% for review in book.book.bookreview_set.all %}
+                                    <div class="container posts-content">
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <div class="card mb-4">
+                                                    <div class="card-body">
+                                                        <div class="media mb-3">
+                                                            <img src="{{ review.user.profile_picture.url }}"
+                                                                 class="d-block ui-w-40 rounded-circle" alt="">
+                                                            <div class="media-body ml-3">
+                                                                <strong>{{ review.user.username }}</strong> rated
+                                                                it {{ review.stars_given }}
+                                                                stars
+                                                                <div class="text-muted small">{{ review.created_at|date:"M d, Y" }}</div>
+                                                            </div>
+                                                        </div>
+
+                                                        <p>{{ review.comment }}</p>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <h5 class="ms-4">No reviews yet</h5>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <hr>
+
+        {% endfor %}
+    {% endif %}
 
 {% endblock %}

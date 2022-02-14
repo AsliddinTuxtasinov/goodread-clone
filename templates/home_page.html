@@ -5,43 +5,8 @@
     {% if page_objects %}
         {% for review in page_objects %}
 
-            <div class="container posts-content">
-                <div class="row">
-                    <div class="col-lg-6">
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <div class="media mb-3">
-                                    <img src="{{ review.user.profile_picture.url }}"
-                                         class="d-block ui-w-40 rounded-circle" alt="">
-                                    <div class="media-body ml-3">
-                                        <strong>{{ review.user.username }}</strong> rated it {{ review.stars_given }}
-                                        stars
-                                        <div class="text-muted small">{{ review.created_at|date:"M d, Y" }}</div>
-                                    </div>
-                                </div>
+            {% include "base_review.html" with review=review %}
 
-                                <p>{{ review.comment | truncatechars:300 }}</p>
-                                <div class="ui-bg">
-                                    <img src="{{ review.book.coover_picture.url }}" alt="{{ review.book.title }}">
-                                </div>
-                                {#                            <a href="javascript:void(0)" class="ui-rect ui-bg-cover"#}
-                                {#                               style="background-image: url({{ review.book.coover_picture.url }});"></a>#}
-                            </div>
-                            {#                        <div class="card-footer">#}
-                            {#                            <a href="javascript:void(0)" class="d-inline-block text-muted">#}
-                            {#                                <strong>123</strong> Likes</small>#}
-                            {#                            </a>#}
-                            {#                            <a href="javascript:void(0)" class="d-inline-block text-muted ml-3">#}
-                            {#                                <strong>12</strong> Comments</small>#}
-                            {#                            </a>#}
-                            {#                            <a href="javascript:void(0)" class="d-inline-block text-muted ml-3">#}
-                            {#                                <small class="align-middle">Repost</small>#}
-                            {#                            </a>#}
-                            {#                        </div>#}
-                        </div>
-                    </div>
-                </div>
-            </div>
         {% endfor %}
         {% include "paginator.html" with page_obj=page_objects %}
     {% else %}

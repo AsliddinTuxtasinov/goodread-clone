@@ -11,8 +11,8 @@ class BookAdmin(admin.ModelAdmin):
 
 @admin.register(Author)
 class AuthorAdmin(admin.ModelAdmin):
-    search_fields = ("first_name", "last_name")
-    list_display = ("first_name", "last_name", "email")
+    search_fields = ("author",)
+    list_display = ("author",)
 
 
 @admin.register(BookAuthor)

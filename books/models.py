@@ -1,6 +1,7 @@
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.urls import reverse
 from django.utils import timezone
 
 User = get_user_model()
@@ -10,28 +11,32 @@ class Book(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
     isbn = models.CharField(max_length=20)
-    coover_picture = models.ImageField(default="default-book-picture.jpg", upload_to="picture/")
+    cover_picture = models.ImageField(default="default-book-picture.jpg", upload_to="picture/")
 
     def __str__(self):
         return self.title
 
+    def get_absolute_url(self):
+        return reverse("books:book_detail", kwargs={"id": self.pk})
+
 
 class Author(models.Model):
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    email = models.EmailField()
-    bio = models.TextField()
+    author = models.OneToOneField(to=User, on_delete=models.CASCADE, related_name="author")
+    add_news = models.TextField()
 
     def full_name(self):
-        return f"{self.first_name} {self.last_name}"
+        return self.author.get_full_name()
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+        return self.full_name()
+
+    def get_absolute_url(self):
+        return reverse("auusers:profile-author", kwargs={"id": self.pk})
 
 
 class BookAuthor(models.Model):
+    author = models.ForeignKey(to=Author, on_delete=models.CASCADE, related_name="book_author")
     book = models.ForeignKey(to=Book, on_delete=models.CASCADE)
-    author = models.ForeignKey(to=Author, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.book.title} by {self.author}"
