@@ -11,13 +11,16 @@ class Book(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
     isbn = models.CharField(max_length=20)
-    cover_picture = models.ImageField(default="default-book-picture.jpg", upload_to="picture/")
+    cover_picture = models.ImageField(default="default-book-picture.jpg", upload_to="picture/", blank=True)
 
     def __str__(self):
         return self.title
 
     def get_absolute_url(self):
         return reverse("books:book_detail", kwargs={"id": self.pk})
+
+    def get_absolute_url_edit(self):
+        return reverse("books:", kwargs={"id": self.pk})
 
 
 class Author(models.Model):

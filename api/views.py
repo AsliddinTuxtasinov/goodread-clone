@@ -15,7 +15,7 @@ class BookReviewDetailAPIView(views.APIView):
 
         return response.Response(data=serializers.data)
 
-    @permission_classes((permissions.IsAuthenticated, ))
+    @permission_classes((permissions.IsAuthenticated,))
     def delete(self, request, id):
         book_review = get_object_or_404(BookReview, id=id)
 
